@@ -1,0 +1,43 @@
+﻿@page "/grid"
+@using ClassWithParameters
+@using PortfolioBlazor.Interfaces;
+@inject IProduct _product
+@code {
+    private IEnumerable<Products> Data = null;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Data = await _product.GetProducts();
+    } 
+}
+
+@if(Data == null)
+{
+    <h4>loading...</h4>
+}
+else
+{
+    @if (Data.Any())
+    {
+        <table class ="table">
+            <thead>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Description</th>
+            </thead>
+            <tbody>
+          @foreach(var obj in Data){
+              <tr>
+               <td>@obj.Id</td>
+               <td>@obj.Name</td>
+               <td>@obj.Price</td>
+               <td>@obj.Description</td>
+              </tr>
+               }
+            </tbody>
+        </table>
+    }
+}
+
+

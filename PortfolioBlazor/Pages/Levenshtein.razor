@@ -1,0 +1,69 @@
+﻿@page "/levenshtein"
+@using PortfolioBlazor
+@using PortfolioBlazor.Helpers
+@using L
+@using LevenshteinDistanceBlazor.Data.BigListOfWords
+<PageTitle>Levenshtein Distance algorithm</PageTitle>
+
+<h1>Levenshtein Distance algorithm</h1>
+<h3>This page show usage of Levenshtein distance.</h3>
+
+<h3><a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Read about here!</a></h3>
+
+<h3>In directory there is around 3900 words that algorithm recognize.</h3>
+<h3>Type anything into text container and below will be shown list of similar words</h3>
+<h3>Enjoy!</h3>
+<h4>Type here -> <input type="text" @bind=worda class="In" > <button onclick="@OnKeyUp">Accept</button></h4>
+<h3>@napisPodPrzyciskiem</h3>
+@if (returnedValues != null)
+{
+    number = 0;
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Lp.</th>
+                <th>Similar word</th>
+                <th>Calculated distance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var words in returnedValues)
+            {
+                number++;
+                <tr>
+                    @if(words.Distance == 0)
+                    {
+                        <td style="Background:gray; color:darkgray">@number</td>
+                        <td style="Background:gray; color:darkgray">@words.Word              <img src="pixil-frame-0.png" onclick="@Redirect"></td>
+                        <td style="Background:gray; color:darkgray">@words.Distance</td>
+                    }
+                    else{
+                    <td>@number</td>
+                    <td>@words.Word</td>
+                    <td>@words.Distance</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    [Inject]
+    public NavigationManager NavigationManager_1 { get; set; }
+    string napisPodPrzyciskiem = "Below will be visible list with similar words.";
+    string lightModeClass = "light-mode";
+    string darkModeClass = "dark-mode";
+    int number = default;
+    public List<string> FullListOfWords = new ListOfWords().GetListOfWords();
+    List<WordDistance> returnedValues;
+    string worda = "";
+    public void OnKeyUp()
+    {
+        returnedValues = LevenshteinService.ComputeAllWords(FullListOfWords, worda);
+        napisPodPrzyciskiem = "There is list with similar words!";
+    }
+    private void Redirect()
+    {
+        NavigationManager_1.NavigateTo("/photo");
+    }
+}

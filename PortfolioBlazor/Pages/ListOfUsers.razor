@@ -1,0 +1,76 @@
+﻿@page "/listofusers"
+@using PortfolioBlazor.Data
+@using ClassWithParameters
+
+<PageTitle>List of users</PageTitle>
+
+<h1>List of users from code:</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th><input type="text" @bind = "@NameText"></th>
+            <th><input type="text" @bind = "@AddressText"></th>
+            <th><input type="text" @bind = "@AgeText"></th>
+            <th><button onclick ="@DodajUzytkownika">Add new user to the list of users!</button></th>
+        </tr>
+    </tbody>
+</table>
+@if (FullListOfUsers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in FullListOfUsers)
+            {
+                <tr>
+                    <td>@user.getName()</td>
+                    <td>@user.getAddress()</td>
+                    <td>@user.getAge()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code{
+    private WebSite list = new WebSite();
+    private string NameText;
+    private string AddressText;
+    private int AgeText;
+    private List<User> FullListOfUsers;
+    private string zmiennaLokalna = "ClickMe";
+    private int jakasliczba = 1;
+    private void ZmienNapisNaElemencie(string nowyNapis)
+    {
+        zmiennaLokalna = nowyNapis;
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        FullListOfUsers = await list.list.GetUsersAsync();
+        FullListOfUsers = FullListOfUsers.OrderBy(x => x.getName()).ThenBy(x=>x.getAddress()).ToList();
+
+    }
+    private async void DodajUzytkownika()
+    {
+        list.list.addUser(NameText, AgeText, AddressText);
+        FullListOfUsers = await list.list.GetUsersAsync();
+        FullListOfUsers = FullListOfUsers.OrderBy(x => x.getName()).ThenBy(x => x.getAddress()).ToList();
+    }
+}

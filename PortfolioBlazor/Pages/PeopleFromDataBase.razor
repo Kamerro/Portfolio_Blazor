@@ -1,0 +1,67 @@
+﻿@page "/People"
+@using ConnectionSQL.ModelInside
+@using ConnectionSQL
+@using PortfolioBlazor.Data;
+@inject IPplData people;
+@inject ISqlDataAccess access;
+<h3>Insert new person</h3>
+
+
+        <EditForm Model="@student" OnValidSubmit="@InsertPerson">
+
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <InputText id="Name" @bind-Value="student.Name"></InputText>
+            <InputNumber id="Id" @bind-Value="student.Id"></InputNumber>
+            <InputNumber id="Semester" @bind-Value="student.Semester"></InputNumber>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </EditForm>
+
+
+<h3>People From Database</h3>
+@code {
+    private List<PersonModel> list;
+    private DisplayModelStudents student = new DisplayModelStudents();
+    protected async override Task OnInitializedAsync()
+    {
+        list = await people.GetPeople();
+    }
+
+    public async Task InsertPerson()
+    {
+        PersonModel p = new PersonModel()
+            {
+                Name = student.Name,
+                Id = student.Id,
+                Semester = student.Semester
+            };
+        await people.InsertPerson(p);
+        list.Add(p);
+        student = new DisplayModelStudents();
+    }
+}
+@if (list != null &&  list.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Semester</th>
+        </thead>
+        <tbody>
+            @foreach(var obj in list)
+            {
+                <tr>
+                    <td>@obj.Id</td>
+                    <td>@obj.Name</td>
+                    <td>@obj.Semester</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else{
+    <h3>Loading...</h3>
+}

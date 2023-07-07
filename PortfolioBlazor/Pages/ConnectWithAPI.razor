@@ -1,0 +1,44 @@
+﻿@page "/apiconnect"
+@inject HttpClient Http
+<h3>Page with connection to the outiste API jsonplaceholder.</h3>
+<br>
+<br>
+@if (apiUsers == null)
+{
+    <p><em>Ładowanie...</em></p>
+}
+else
+{
+    <table class="table">
+            <thead>
+              <tr>
+                    <th>Username</th>
+                    <th>Email address</th>
+              </tr>
+            </thead>
+            <tbody>
+            @foreach(var obj in apiUsers)
+            {
+                <tr>
+                    <td>@obj.name</td>
+                    <td>@obj.email</td>
+                </tr>
+            }
+            </tbody>
+    </table>
+
+}
+
+@code {
+    APIUsers[] apiUsers;
+    protected override async Task OnInitializedAsync()
+    {
+        apiUsers = await Http.GetFromJsonAsync<APIUsers[]>("https://jsonplaceholder.typicode.com/users");
+    }
+
+    public class APIUsers
+    {
+        public string name { get; set; }
+        public string email { get; set; }
+    }
+}
